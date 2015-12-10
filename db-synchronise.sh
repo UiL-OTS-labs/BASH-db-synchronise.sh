@@ -112,7 +112,8 @@ function make_backup_from_target()
         NOW="$(date +"%F-%H-%M-%S")"
         BACKUP_FILENAME_PATH="$BACKUP_DIRECTORY_PATH/$NOW.tar.gz"
 
-        tar  --directory "$(dirname "$TARGET_DIRECTORY_PATH")"  --listed-incremental "$SNAPSHOT_FILE_PATH" --exclude "*$BACKUP_DIRECTORY*" \
+        tar  --no-ignore-case --no-check-device \
+        --directory "$(dirname "$TARGET_DIRECTORY_PATH")"  --listed-incremental "$SNAPSHOT_FILE_PATH" --exclude "*$BACKUP_DIRECTORY*" \
         --create --gzip --file "$BACKUP_FILENAME_PATH" "$TARGET_DIRECTORY"
         case "$PIPESTATUS" in
                 0)
@@ -131,6 +132,7 @@ function synchronise_and_check_source_and_target()
     
     rsync --omit-dir-times --times --recursive --human-readable --update --itemize-changes --compress \
     --progress --log-file="$LOG_FILENAME_PATH" \
+    --chmod=Dug=rwx,Do-rwx,Fug=rw,Fo-rwx \
     --exclude "$THIS_SCRIPT_FILENAME" --exclude "$BACKUP_DIRECTORY" \
     "$SOURCE_DIRECTORY_PATH/" "$TARGET_DIRECTORY_PATH" \
     | tee >(zenity --progress --pulsate --percentage=0 --text="$USER_UPDATE" --auto-close) | xargs -L1 echo
@@ -157,13 +159,6 @@ function check_if_success()
     fi
 }
 
-function check_and_set_permissions() 
-{
-    chmod  --silent --recursive a-rwx,ug-x+rwX,o-rwx  "$TARGET_DIRECTORY_PATH/"
-
-    find  "$TARGET_DIRECTORY_PATH" -iname "$THIS_SCRIPT_FILENAME" -exec chmod ug+rwx --silent {} \;
-}
-
 #Input arguments are provided?
 case $# in
                 0)
@@ -183,8 +178,6 @@ validate_target_directory_permisisons "$TARGET_DIRECTORY_PATH"
 make_backup_from_target
 
 synchronise_and_check_source_and_target
-
-check_and_set_permissions
 
 USER_UPDATE="Synchronised\n\t\"$SOURCE_DIRECTORY_PATH\"\nwith\n\t\"$TARGET_DIRECTORY_PATH\"\n"
 printf  "$USER_UPDATE"
