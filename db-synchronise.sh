@@ -33,7 +33,7 @@ SOURCE_DIRECTORY=""
 TARGET_DIRECTORY_PATH=""
 TARGET_DIRECTORY=""
 
-function main() { #input: number of input variables.
+function main() {
 
     determine_source_and_target
 
@@ -56,7 +56,7 @@ function main() { #input: number of input variables.
 
 function determine_source_and_target()
 {
-    # How many Input arguments are provided?
+    # How many Input arguments to the script are provided?
     case $NUMBER_OF_INPUT_ARGUMENTS in
                     0)
                             set_target_and_source_WITHOUT_command_line_arguments;;
@@ -73,7 +73,7 @@ function set_target_and_source_WITHOUT_command_line_arguments
         SOURCE_DIRECTORY_PATH="$(dirname "$(readlink -f "$0")")"
         SOURCE_DIRECTORY="$(basename "$SOURCE_DIRECTORY_PATH")"
 
-         echo "\"$SOURCE_DIRECTORY_PATH\" has been selected as source."
+        echo "\"$SOURCE_DIRECTORY_PATH\" has been selected as source."
 
         # Setup and check the target directory.
         TARGET_DIRECTORY_PATH=$(zenity --file-selection --directory --title="$WARNING_TEXT TOO" --filename="$SELECTION_START_DIRECTORY" --save)
@@ -98,7 +98,7 @@ function set_target_and_source_WITH_command_line_arguments()
         TARGET_DIRECTORY="$(basename "$TARGET_DIRECTORY_PATH")"
 }
 
-function validate_directory #Requres input.
+function validate_directory #Requires an input.
 {
         if [ ! "$(basename "$1")" = "$ZEP_DATABASE_DIRECTORY" ]; then
                 handle_error "\"$1\" is not a valid Zep-database directory ($ZEP_DATABASE_DIRECTORY)! $WARNING_TEXT"
@@ -109,14 +109,14 @@ function validate_directory #Requres input.
         fi
 }
 
-function validate_source_directory_permisisons() #Requres input.
+function validate_source_directory_permisisons() #Requires an input.
 {
         if [ ! -r "$1" ]; then
                 handle_error "\"$1\" cannot be read from! (Permissions)"
         fi
 }
 
-function validate_target_directory_permisisons() #Requres input.
+function validate_target_directory_permisisons() #Requires an input.
 {
         if [ ! -w "$1" ]; then
                 handle_error "\"$1\" cannot be written too! (Permissions)"
