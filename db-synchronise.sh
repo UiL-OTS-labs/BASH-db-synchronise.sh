@@ -158,7 +158,7 @@ function synchronise_and_check_source_and_target()
     --chmod=Dug=rwx,Do-rwx,Fug=rw,Fo-rwx \
     --exclude "$THIS_SCRIPT_FILENAME" --exclude "$BACKUP_DIRECTORY" \
     "$SOURCE_DIRECTORY_PATH/" "$TARGET_DIRECTORY_PATH" \
-    | tee >(zenity --progress --pulsate --percentage=0 --text="$USER_UPDATE" --auto-close) | xargs -L1 echo
+    | tee >(zenity --progress --pulsate --percentage=0 --text="$USER_UPDATE" --auto-close) | xargs --no-run-if-empty -L1 echo
 
     case "$PIPESTATUS" in
                     0)
